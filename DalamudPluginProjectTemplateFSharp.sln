@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30523.141
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DalamudPluginProjectTemplateFSharp", "DalamudPluginProjectTemplateFSharp.fsproj", "{A89A44EA-BE0B-46FD-8B9B-9755E64EF195}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A89A44EA-BE0B-46FD-8B9B-9755E64EF195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A89A44EA-BE0B-46FD-8B9B-9755E64EF195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A89A44EA-BE0B-46FD-8B9B-9755E64EF195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A89A44EA-BE0B-46FD-8B9B-9755E64EF195}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14BA5EE2-4438-4E0F-B361-C1024C7E2BED}
+	EndGlobalSection
+EndGlobal
