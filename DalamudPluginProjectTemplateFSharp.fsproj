@@ -11,14 +11,16 @@
     <Compile Include="Attributes\DoNotShowInHelpAttribute.fs" />
     <Compile Include="Attributes\CommandAttribute.fs" />
     <Compile Include="Attributes\AliasesAttribute.fs" />
-    <Content Include="Plugin.json" />
+    <Content Include="DalamudPluginProjectTemplateFSharp.json" />
     <Compile Include="PluginCommandManager.fs" />
     <Compile Include="PluginUI.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="Plugin.fs" />
   </ItemGroup>
 
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="DalamudPackager" Version="1.0.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Dalamud">
@@ -63,12 +65,6 @@
       <HintPath Condition="Exists('..\..\Dalamud\Dalamud\bin\Debug')">..\..\Dalamud\Dalamud\bin\Debug\Newtonsoft.Json.dll</HintPath>
       <Private>false</Private>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Plugin.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
