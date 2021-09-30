@@ -1,17 +1,16 @@
 ﻿namespace DalamudPluginProjectTemplateFSharp
 
 open System
+open System.Collections.Generic
 open System.Linq
 open System.Reflection
-open Dalamud.Plugin
 open Dalamud.Game.Command
 open DalamudPluginProjectTemplateFSharp.Attributes
-open System.Collections.Generic
 
 type private LoadedCommandInfo = (string*CommandInfo)
 
 [<AllowNullLiteral>]
-type PluginCommandManager<'THost>(host : 'THost, pluginInterface : DalamudPluginInterface) as this =
+type PluginCommandManager<'THost>(host : 'THost, commandManager : CommandManager) as this =
     let GetCommandInfoTuple(method : MethodInfo) : IEnumerable<LoadedCommandInfo> =
         let handlerDelegate : CommandInfo.HandlerDelegate = downcast Delegate.CreateDelegate(typeof<CommandInfo.HandlerDelegate>, host, method)
 
@@ -40,11 +39,11 @@ type PluginCommandManager<'THost>(host : 'THost, pluginInterface : DalamudPlugin
     member private this.AddCommandHandlers() =
         for i = 0 to pluginCommands.Length - 1 do
             let (command, commandInfo) = pluginCommands.[i]
-            pluginInterface.CommandManager.AddHandler(command, commandInfo) |> ignore
+            commandManager.AddHandler(command, commandInfo) |> ignore
     member private this.RemoveCommandHandlers() =
         for i = 0 to pluginCommands.Length - 1 do
             let (command, _) = pluginCommands.[i]
-            pluginInterface.CommandManager.RemoveHandler(command) |> ignore
+            commandManager.RemoveHandler(command) |> ignore
 
     interface IDisposable with
         member this.Dispose() =
