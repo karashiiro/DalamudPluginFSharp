@@ -5,22 +5,19 @@ open Newtonsoft.Json
 open Dalamud.Plugin
 
 type Configuration() =
-    let mutable version : int = 0
+    // Add any other properties or methods here. NOTE: they must be mutable / have setters
+    // example: `member val MyProp = defaultValue with get, set`
 
-    // Add any other properties or methods here.
-
+    // machinery for convenience Save() method
     [<JsonIgnore>]
-    let mutable pluginInterface : DalamudPluginInterface = null
+    let mutable pluginInterface: DalamudPluginInterface = null
 
-    member this.Initialize(pi : DalamudPluginInterface) =
-        pluginInterface <- pi
+    /// Called once from plugin initalization, stores the DalamudPluginInterface reference.
+    member _.Initialize(pi: DalamudPluginInterface) = pluginInterface <- pi
 
-    member this.Save() =
-        pluginInterface.SavePluginConfig(this)
+    /// Saves the current configuration.
+    member this.Save() = pluginInterface.SavePluginConfig(this)
 
+    // mandatory interface + config file Version property
     interface IPluginConfiguration with
-        member this.Version
-            with get (): int =
-                version
-            and set (v : int): unit = 
-                version <- v
+        member val Version = 0 with get, set
