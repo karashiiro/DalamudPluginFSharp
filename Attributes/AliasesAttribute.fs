@@ -2,8 +2,8 @@
 
 open System
 
-[<AllowNullLiteral>]
-[<AttributeUsage(AttributeTargets.Method)>]
-type AliasesAttribute([<ParamArray>] aliases : string[]) =
+/// List of other command names that also invoke this command.
+[<AllowNullLiteral; AttributeUsage(AttributeTargets.Method)>]
+type AliasesAttribute([<ParamArray>] aliases: string []) =
     inherit Attribute()
     member this.Aliases = aliases

@@ -9,39 +9,51 @@ open Dalamud.Game.ClientState
 open Dalamud.IoC
 open DalamudPluginProjectTemplateFSharp.Attributes
 
-type Plugin([<RequiredVersion("1.0")>] pluginInterface : DalamudPluginInterface,
-            [<RequiredVersion("1.0")>] commands : CommandManager,
-            [<RequiredVersion("1.0")>] chat : ChatGui,
-            [<RequiredVersion("1.0")>] clientState : ClientState) as this =
-    let mutable commandManager : PluginCommandManager<Plugin> = null
-    let mutable config = Configuration()
-    let ui = PluginUI()
+type Plugin
+    (
+        [<RequiredVersion("1.0")>] pluginInterface: DalamudPluginInterface,
+        [<RequiredVersion("1.0")>] commands: CommandManager,
+        [<RequiredVersion("1.0")>] chat: ChatGui,
+        [<RequiredVersion("1.0")>] clientState: ClientState
+    ) as this =
+    let config =
+        match pluginInterface.GetPluginConfig() with
+        | null -> Configuration()
+        | config -> downcast config
 
-    // Initialization
-    let loadedConfig = pluginInterface.GetPluginConfig()
-    do if (loadedConfig <> null) then
-        config <- downcast loadedConfig
     do config.Initialize(pluginInterface)
-    do pluginInterface.UiBuilder.add_Draw(fun() -> ui.Draw())
-    do commandManager <- new PluginCommandManager<Plugin>(this, commands)
+
+    /// Implement your plugin UI in the PluginUI class.
+    let ui = PluginUI()
+    /// Delegate instance for ui.Draw; reference saved for Dispose().
+    let drawHandler = Action(ui.Draw)
+    do pluginInterface.UiBuilder.add_Draw drawHandler
+
+    /// Implements the command attributes; reference only used to Dispose().
+    let commandManager = new PluginCommandManager<Plugin>(this, commands)
 
     [<Command("/example1")>]
     [<HelpMessage("Example help message.")>]
-    member this.ExampleCommand1(command : string, args : string) =
-        let world = clientState.LocalPlayer.CurrentWorld.GameData
-        chat.Print(String.Format("Hello {0}!", world.Name))
-        PluginLog.Log("Message sent successfully.")
-        
-    member private this.Dispose(disposing : bool) =
-        match disposing with
-        | true ->
-            (commandManager :> IDisposable).Dispose()
-            config.Save()
-            pluginInterface.UiBuilder.remove_Draw(fun() -> ui.Draw())
-            pluginInterface.Dispose()
-        | false -> ()
+    member _.ExampleCommand1(command: string, args: string) : unit =
+        // there's no nice way to handle all the unmarked nulls in the API; options are:
+        // - risk NullReferenceException and hope for the best
+        // - "if not (isNull x) then" checks (don't use "<> null")
+        // - match and bind on the not-null case, as in this example (most idiomatic option)
+        match clientState.LocalPlayer with
+        | null -> ()
+        | localPlayer ->
+            match localPlayer.CurrentWorld.GameData with
+            | null -> ()
+            | world ->
+                chat.Print($"Hello {world.Name}!")
+                PluginLog.Log("Message sent successfully.")
 
     interface IDalamudPlugin with
-        member this.Name = "Your Plugin's Display Name"
-        member this.Dispose() =
-            this.Dispose(true)
+        member _.Name = "Your Plugin's Display Name"
+
+        member _.Dispose() =
+            (commandManager :> IDisposable).Dispose()
+            config.Save()
+            pluginInterface.UiBuilder.remove_Draw drawHandler
+            // NOTE: pluginInterface.Dispose() exists but is [<Obsolete>]
+            (pluginInterface :> IDisposable).Dispose()
