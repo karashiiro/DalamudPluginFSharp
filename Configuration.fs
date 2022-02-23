@@ -13,7 +13,7 @@ type Configuration() =
     let mutable pluginInterface: DalamudPluginInterface = null
 
     /// Called once from plugin initalization, stores the DalamudPluginInterface reference.
-    member _.Initialize(pi: DalamudPluginInterface) = pluginInterface <- pi
+    member internal _.Initialize(pi: DalamudPluginInterface) = pluginInterface <- pi
 
     /// Saves the current configuration.
     member this.Save() = pluginInterface.SavePluginConfig(this)
