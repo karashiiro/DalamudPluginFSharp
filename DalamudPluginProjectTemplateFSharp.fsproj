@@ -6,23 +6,28 @@
 		<PlatformTarget>x64</PlatformTarget>
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="README.md" />
+		<Compile Include="Builders.fs" />
 		<Compile Include="Attributes\HelpMessageAttribute.fs" />
 		<Compile Include="Attributes\DoNotShowInHelpAttribute.fs" />
 		<Compile Include="Attributes\CommandAttribute.fs" />
 		<Compile Include="Attributes\AliasesAttribute.fs" />
 		<Content Include="DalamudPluginProjectTemplateFSharp.json" />
+		<!-- Add extra files past this point (order is important in F#) -->
 		<Compile Include="PluginCommandManager.fs" />
 		<Compile Include="PluginUI.fs" />
 		<Compile Include="Configuration.fs" />
+		<!-- Plugin.fs should be last -->
 		<Compile Include="Plugin.fs" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="DalamudPackager" Version="2.1.2" />
+		<PackageReference Update="FSharp.Core" Version="6.0.3" />
 	</ItemGroup>
 
 	<PropertyGroup>
@@ -61,10 +66,6 @@
 			<HintPath>$(DalamudLibPath)\Newtonsoft.Json.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Update="FSharp.Core" Version="6.0.3" />
 	</ItemGroup>
 
 </Project>
