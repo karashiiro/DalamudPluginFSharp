@@ -1,20 +1,20 @@
 ﻿namespace DalamudPluginProjectTemplateFSharp
 
-open System
-open Dalamud.Plugin
-open Dalamud.Logging
 open Dalamud.Game.Command
 open Dalamud.Game.Gui
 open Dalamud.Game.ClientState
-open Dalamud.IoC
+open Dalamud.Interface.Windowing
+open Dalamud.Plugin
+open Dalamud.Logging
 open DalamudPluginProjectTemplateFSharp.Attributes
+open System
 
 type Plugin
     (
-        [<RequiredVersion("1.0")>] pluginInterface: DalamudPluginInterface,
-        [<RequiredVersion("1.0")>] commands: CommandManager,
-        [<RequiredVersion("1.0")>] chat: ChatGui,
-        [<RequiredVersion("1.0")>] clientState: ClientState
+        pluginInterface: DalamudPluginInterface,
+        commands: CommandManager,
+        chat: ChatGui,
+        clientState: ClientState
     ) as this =
     let config =
         match pluginInterface.GetPluginConfig() with
@@ -23,10 +23,13 @@ type Plugin
 
     do config.Initialize(pluginInterface)
 
-    /// Implement your plugin UI in the PluginUI class.
-    let ui = PluginUI()
+    /// Implement your plugin UI in the PluginWindow class.
+    let windowSystem = WindowSystem(typeof<Plugin>.AssemblyQualifiedName)
+    // This can be null, but F# refuses to recognize that. Good luck.
+    do pluginInterface.Create<PluginWindow>() |> windowSystem.AddWindow
+    
     /// Delegate instance for ui.Draw; reference saved for Dispose().
-    let drawHandler = Action(ui.Draw)
+    let drawHandler = Action(windowSystem.Draw)
     do pluginInterface.UiBuilder.add_Draw drawHandler
 
     /// Implements the command attributes; reference only used to Dispose().
@@ -49,7 +52,7 @@ type Plugin
             let! localPlayer = clientState.LocalPlayer
             let! world = localPlayer.CurrentWorld.GameData
 
-            chat.Print $"Hello %s{world.Name.ToString()}!"
+            chat.Print $"Hello, %s{world.Name.ToString()}!"
             PluginLog.Log "Message sent successfully."
         }
         |> ignore
@@ -60,6 +63,5 @@ type Plugin
         member _.Dispose() =
             (commandManager :> IDisposable).Dispose()
             config.Save()
+            windowSystem.RemoveAllWindows()
             pluginInterface.UiBuilder.remove_Draw drawHandler
-            // NOTE: pluginInterface.Dispose() exists but is [<Obsolete>]
-            (pluginInterface :> IDisposable).Dispose()
